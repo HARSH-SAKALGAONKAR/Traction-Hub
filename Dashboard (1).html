@@ -1,0 +1,69 @@
+<div id="traction-hub-dashboard" role="region" aria-label="Adaptive traction hub vehicle dashboard">
+  <style>
+    #traction-hub-dashboard { --ink:#eaf2f7; --muted:#93a7b5; --panel:#101a22; --line:#293b47; --glow:#3fd8ff; --good:#54dfaa; --warn:#ffba45; --danger:#ff6b61; color:var(--ink); background:radial-gradient(circle at 50% 48%,#152d3b 0,#0a1016 48%,#05080b 100%); border-radius:24px; overflow:hidden; font-family:Inter,ui-sans-serif,system-ui,sans-serif; box-shadow:0 18px 50px #0008; }
+    #traction-hub-dashboard * { box-sizing:border-box; }
+    #traction-hub-dashboard .dash { min-height:680px; padding:22px 28px 26px; display:grid; grid-template-rows:auto 1fr auto; gap:18px; position:relative; }
+    #traction-hub-dashboard .topbar,#traction-hub-dashboard .foot { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+    #traction-hub-dashboard .brand { display:flex; align-items:center; gap:11px; letter-spacing:.12em; font-weight:700; font-size:13px; }
+    #traction-hub-dashboard .brand i { color:var(--glow); }
+    #traction-hub-dashboard .mode { color:var(--good); font-size:12px; letter-spacing:.1em; }
+    #traction-hub-dashboard .main { display:grid; grid-template-columns:minmax(165px,1fr) minmax(285px,1.45fr) minmax(165px,1fr); align-items:center; gap:18px; }
+    #traction-hub-dashboard .metric-stack { display:grid; gap:14px; }
+    #traction-hub-dashboard .metric { background:linear-gradient(135deg,#12202a,#0d151b); border:1px solid var(--line); border-radius:15px; padding:17px; min-height:125px; }
+    #traction-hub-dashboard .tyre-panel { background:linear-gradient(135deg,#12202a,#0d151b); border:1px solid var(--line); border-radius:15px; padding:17px; }
+    #traction-hub-dashboard .tyre-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    #traction-hub-dashboard .tyre { background:#0a1218; border:1px solid #243743; border-radius:9px; padding:10px 8px; }
+    #traction-hub-dashboard .tyre-name { display:block; color:var(--muted); font-size:9px; letter-spacing:.08em; }
+    #traction-hub-dashboard .tyre-value { display:block; margin-top:4px; font-size:21px; font-weight:500; letter-spacing:-.04em; }
+    #traction-hub-dashboard .tyre-value small { color:var(--muted); font-size:10px; letter-spacing:0; }
+    #traction-hub-dashboard .label { color:var(--muted); font-size:11px; letter-spacing:.12em; text-transform:uppercase; }
+    #traction-hub-dashboard .value { font-size:40px; line-height:1; margin:12px 0 7px; font-weight:500; letter-spacing:-.05em; }
+    #traction-hub-dashboard .unit { color:var(--muted); font-size:13px; letter-spacing:0; margin-left:5px; }
+    #traction-hub-dashboard .detail { color:var(--good); font-size:12px; }
+    #traction-hub-dashboard .detail.warn { color:var(--warn); }
+    #traction-hub-dashboard .wheel-zone { min-height:485px; display:grid; place-items:center; position:relative; }
+    #traction-hub-dashboard .wheel-zone:before { content:''; width:min(83%,365px); aspect-ratio:1; position:absolute; border:1px solid #3fd8ff22; border-radius:50%; box-shadow:0 0 0 26px #3fd8ff08,0 0 60px #39d8ff24 inset; }
+    #traction-hub-dashboard .wheel-caption { position:absolute; top:5px; text-align:center; color:var(--muted); font-size:11px; letter-spacing:.16em; }
+    #traction-hub-dashboard .wheel { width:260px; height:260px; border-radius:50%; position:relative; display:grid; place-items:center; background:repeating-conic-gradient(from 6deg,#1c2b34 0 5deg,#071016 5deg 13deg); box-shadow:inset 0 0 0 25px #263a46,inset 0 0 38px #000,0 20px 34px #0009; animation:thd-spin 4.2s linear infinite; }
+    #traction-hub-dashboard .wheel:after { content:''; position:absolute; inset:31px; border-radius:50%; background:repeating-conic-gradient(#8da4af 0 2deg,#2a3d48 2deg 12deg); box-shadow:inset 0 0 0 10px #182932,0 0 20px #3fd8ff55; }
+    #traction-hub-dashboard .hub { width:90px; height:90px; border-radius:50%; z-index:2; background:radial-gradient(circle at 34% 30%,#cce5ee,#65808d 31%,#263b46 34%,#0b1319 69%); border:5px solid #7896a2; box-shadow:0 0 0 9px #10202a,0 0 28px #3fd8ff77; display:grid; place-items:center; color:#d9edf4; font-size:10px; letter-spacing:.12em; text-align:center; }
+    #traction-hub-dashboard .lug { position:absolute; width:17px; height:37px; background:linear-gradient(#60e7ff,#1c7f99); top:-13px; left:calc(50% - 8px); border-radius:5px 5px 1px 1px; transform-origin:8px 143px; opacity:.18; transition:opacity .4s,filter .4s; }
+    #traction-hub-dashboard .lug:nth-child(1){transform:rotate(0deg)} #traction-hub-dashboard .lug:nth-child(2){transform:rotate(45deg)} #traction-hub-dashboard .lug:nth-child(3){transform:rotate(90deg)} #traction-hub-dashboard .lug:nth-child(4){transform:rotate(135deg)} #traction-hub-dashboard .lug:nth-child(5){transform:rotate(180deg)} #traction-hub-dashboard .lug:nth-child(6){transform:rotate(225deg)} #traction-hub-dashboard .lug:nth-child(7){transform:rotate(270deg)} #traction-hub-dashboard .lug:nth-child(8){transform:rotate(315deg)}
+    #traction-hub-dashboard.deployed .lug { opacity:1; filter:drop-shadow(0 0 6px #3fd8ff); }
+    #traction-hub-dashboard.deployed .wheel { animation-duration:2.2s; }
+    #traction-hub-dashboard .alert-card { background:linear-gradient(135deg,#2d2113,#17140f); border:1px solid #8a642c; border-radius:16px; padding:17px; }
+    #traction-hub-dashboard .alert-head { display:flex; align-items:center; gap:10px; color:var(--warn); font-size:18px; font-weight:700; letter-spacing:.11em; }
+    #traction-hub-dashboard .alert-card p { font-size:20px; line-height:1.55; color:#d8d1c3; margin:14px 0 17px; }
+    #traction-hub-dashboard .actions { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    #traction-hub-dashboard button { font:inherit; font-size:15px; font-weight:700; letter-spacing:.09em; padding:13px 12px; border-radius:9px; cursor:pointer; border:1px solid #405362; background:#111d26; color:var(--ink); }
+    #traction-hub-dashboard button.primary { background:var(--glow); border-color:var(--glow); color:#06202a; }
+    #traction-hub-dashboard .traction { padding:17px 18px; background:#0c171e; border:1px solid var(--line); border-radius:18px; }
+    #traction-hub-dashboard .bar { height:8px; border-radius:99px; background:#22323c; overflow:hidden; margin:12px 0 8px; }
+    #traction-hub-dashboard .bar > span { display:block; height:100%; width:78%; background:linear-gradient(90deg,var(--good),var(--warn)); border-radius:inherit; transition:width .35s; }
+    #traction-hub-dashboard .traction-row { display:flex; justify-content:space-between; color:var(--muted); font-size:12px; }
+    #traction-hub-dashboard .foot { border-top:1px solid #253640; padding-top:15px; color:var(--muted); font-size:11px; letter-spacing:.08em; }
+    #traction-hub-dashboard .system { display:flex; align-items:center; gap:8px; } #traction-hub-dashboard .dot { width:8px; height:8px; border-radius:50%; background:var(--good); box-shadow:0 0 10px var(--good); }
+    #traction-hub-dashboard .deploy-note { color:var(--good); min-height:18px; text-align:right; }
+    @keyframes thd-spin { to { transform:rotate(360deg); } }
+    @media (prefers-reduced-motion:reduce) { #traction-hub-dashboard .wheel { animation:none; } }
+    @media (max-width:620px) { #traction-hub-dashboard .dash { min-height:0; padding:18px; } #traction-hub-dashboard .main { grid-template-columns:1fr; } #traction-hub-dashboard .wheel-zone { min-height:330px; order:-1; } #traction-hub-dashboard .wheel { width:210px; height:210px; } #traction-hub-dashboard .lug { transform-origin:8px 118px; } #traction-hub-dashboard .metric-stack { grid-template-columns:1fr 1fr; } #traction-hub-dashboard .foot { align-items:flex-start; flex-direction:column; gap:8px; } }
+  </style>
+  <main class="dash">
+    <div class="topbar"><div class="brand"><i data-lucide="gauge" aria-hidden="true"></i> ADAPTIVE TRACTION HUB</div><div class="mode">RECOVERY ASSIST · ARMED</div></div>
+    <section class="main">
+      <div class="metric-stack" aria-label="Vehicle readings">
+        <div class="tyre-panel" aria-label="Tyre pressure for all four wheels"><div class="label">Tyre pressure · all wheels</div><div class="tyre-grid"><div class="tyre"><span class="tyre-name">FRONT LEFT</span><span class="tyre-value">34.6 <small>psi</small></span></div><div class="tyre"><span class="tyre-name">FRONT RIGHT</span><span class="tyre-value">34.4 <small>psi</small></span></div><div class="tyre"><span class="tyre-name">REAR LEFT</span><span class="tyre-value">35.0 <small>psi</small></span></div><div class="tyre"><span class="tyre-name">REAR RIGHT</span><span class="tyre-value">34.8 <small>psi</small></span></div></div><div class="detail" style="margin-top:11px">● All tyres nominal</div></div>
+        <div class="metric"><div class="label">Vehicle speed</div><div class="value"><span id="speed">12</span><span class="unit">km/h</span></div><div class="detail">● Low-speed mode</div></div>
+      </div>
+      <div class="wheel-zone" aria-label="Animated central wheel with traction lugs"><div class="wheel-caption">FRONT-LEFT TRACTION HUB</div><div class="wheel" aria-hidden="true"><span class="lug"></span><span class="lug"></span><span class="lug"></span><span class="lug"></span><span class="lug"></span><span class="lug"></span><span class="lug"></span><span class="lug"></span><div class="hub">TRACTION<br>HUB</div></div></div>
+      <div class="metric-stack">
+        <div class="alert-card" id="alertCard"><div class="alert-head"><i data-lucide="triangle-alert" aria-hidden="true"></i> HIGH WHEEL SLIP</div><p id="alertText">Traction demand is high. Deploy rigid traction lugs for recovery assistance?</p><div class="actions"><button type="button" id="noDeploy">NO, RETRACT</button><button type="button" class="primary" id="yesDeploy">YES, DEPLOY</button></div></div>
+        <div class="traction"><div class="label">Traction demand</div><div class="bar"><span id="tractionBar"></span></div><div class="traction-row"><span>Measured slip <b id="slip">78%</b></span><span id="tractionState">HIGH</span></div></div>
+      </div>
+    </section>
+    <div class="foot"><div class="system"><span class="dot"></span> HUB ACTUATOR HEALTHY</div><div class="deploy-note" id="deployNote" aria-live="polite">LUGS RETRACTED · PAVED-ROAD SAFE</div></div>
+  </main>
+  <script>
+    (() => { const root=document.getElementById('traction-hub-dashboard'), yes=document.getElementById('yesDeploy'), no=document.getElementById('noDeploy'), note=document.getElementById('deployNote'), text=document.getElementById('alertText'), state=document.getElementById('tractionState'), bar=document.getElementById('tractionBar'); function setDeployed(on){root.classList.toggle('deployed',on); yes.textContent=on?'LUGS DEPLOYED':'YES, DEPLOY'; note.textContent=on?'LUGS DEPLOYED · RECOVERY ASSIST ACTIVE':'LUGS RETRACTED · PAVED-ROAD SAFE'; text.textContent=on?'Rigid traction lugs are locked beyond the tread. Keep speed below 20 km/h.':'Traction demand is high. Deploy rigid traction lugs for recovery assistance?'; state.textContent=on?'ASSIST ACTIVE':'HIGH'; bar.style.width=on?'92%':'78%';} yes.addEventListener('click',()=>setDeployed(!root.classList.contains('deployed'))); no.addEventListener('click',()=>setDeployed(false)); })();
+  </script>
+</div>
